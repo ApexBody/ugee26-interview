@@ -4,98 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interview Status Board</title>
-    <style>
-        :root {
-            --bg-color: #0d1117;
-            --text-color: #c9d1d9;
-            --accent-yellow: #f0e68c;
-            --header-bg: #161b22;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Courier New', Courier, monospace;
-            margin: 0;
-            padding: 2vw;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            box-sizing: border-box;
-            overflow: hidden; /* Prevents scrollbars on TV */
-        }
-
-        header {
-            text-align: center;
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--accent-yellow);
-            text-transform: uppercase;
-            letter-spacing: 0.2rem;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #30363d;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            flex-grow: 1;
-            table-layout: fixed;
-        }
-
-        th {
-            background-color: var(--header-bg);
-            color: #8b949e;
-            font-size: 1.8rem;
-            text-align: left;
-            padding: 15px 20px;
-            text-transform: uppercase;
-        }
-
-        td {
-            font-size: 2.2rem;
-            font-weight: bold;
-            padding: 12px 20px;
-            border-bottom: 1px solid #21262d;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis; /* Prevents long names from breaking the layout */
-        }
-
-        /* Status Colors */
-        .status-yet-to-arrive { color: #dc3545; }
-        .status-registered { color: #28a745; }
-        .status-in-progress { color: #007bff; }
-        .status-interview-done { color: #ffc107; }
-        .status-completed { color: #dc3545; }
-
-        /* Adjusted Column Widths */
-        .id-column { width: 25%; color: var(--accent-yellow); }
-        .name-column { width: 45%; color: var(--text-color); }
-        .status-column { width: 30%; }
-
-        footer {
-            margin-top: 20px;
-            text-align: right;
-            font-size: 1.5rem;
-            color: #8b949e;
-        }
-
-        /* Simple fade animation for transitions */
-        .fade {
-            animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <header>Interview Status Board</header>
+    <header class="topbar">
+        <div class="title">Interview Status Board</div>
+        <nav class="topbar-links">
+            <a href="search.html">Search</a>
+        </nav>
+    </header>
 
     <table id="board">
         <thead>
@@ -150,6 +68,7 @@
 
         // --- RENDERING LOGIC ---
         function getStatusClass(state) {
+            if (!state) return 'status-unknown';
             const formattedState = state.toLowerCase().replace(/ /g, '-');
             return `status-${formattedState}`;
         }
@@ -177,7 +96,7 @@
                 <tr>
                     <td class="id-column">${candidate.Admission_ID || '---'}</td>
                     <td class="name-column">${candidate.Name || '---'}</td>
-                    <td class="${getStatusClass(candidate.State)}">${candidate.State || 'UNKNOWN'}</td>
+                    <td><span class="status ${getStatusClass(candidate.State)}">${candidate.State || 'UNKNOWN'}</span></td>
                 </tr>
             `).join('');
 
