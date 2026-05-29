@@ -133,7 +133,7 @@
                 const data = await response.json();
                 
                 // Filter logic
-                const allowedStatuses = ['REGISTERED', 'IN PROGRESS', 'COMPLETED'];
+                const allowedStatuses = ['REGISTERED', 'IN PROGRESS', 'INTERVIEW DONE'];
                 allCandidates = data.filter(candidate => 
                     allowedStatuses.includes(candidate.State)
                 );
