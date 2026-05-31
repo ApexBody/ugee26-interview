@@ -303,29 +303,108 @@ footer {
 
 @media (max-width: 900px) {
     body {
-        padding: 14px 18px 16px;
+        padding: 16px;
+        overflow-y: auto;
     }
 
     header {
-        text-align: center;
-        letter-spacing: 0.12rem;
+        font-size: 1.35rem;
+        letter-spacing: 0.1rem;
+        margin-bottom: 20px;
     }
 
     .topbar {
-        flex-direction: column;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    /* Hide board link on mobile - board is for TV display */
+    .topbar-links a[href="index.html"] {
+        display: none;
+    }
+
+    /* Better positioning for search panel on mobile */
+    .search-page .search-panel {
+        margin-top: 0;
+    }
+
+    .search-panel {
+        padding: 20px;
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .search-label {
+        font-size: 1rem;
     }
 
     .search-row {
         flex-direction: column;
         align-items: stretch;
+        gap: 12px;
     }
 
-    th,
-    td {
-        padding: 8px 12px;
+    /* Larger touch targets for mobile */
+    .search-input {
+        padding: 16px 18px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+    }
+
+    .search-button {
+        padding: 16px 20px;
+        font-size: 1.05rem;
+        border-radius: 10px;
+    }
+
+    .search-meta {
+        flex-direction: column;
+        gap: 4px;
+        font-size: 0.9rem;
+    }
+
+    /* Optimize table for mobile */
+    table {
+        border-radius: 10px;
+        font-size: 0.95rem;
+    }
+
+    th {
+        font-size: 0.85rem;
+        padding: 12px 10px;
+        letter-spacing: 0.05rem;
     }
 
     td {
+        font-size: 1rem;
+        padding: 14px 10px;
         font-weight: 600;
+    }
+
+    /* Adjust column widths for mobile */
+    .id-column {
+        width: 28%;
+    }
+
+    .name-column {
+        width: 42%;
+    }
+
+    .status-column {
+        width: 30%;
+    }
+
+    /* Smaller status badges on mobile */
+    .status {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+        min-height: 26px;
+        letter-spacing: 0.02rem;
+    }
+
+    footer {
+        font-size: 0.9rem;
+        margin-top: 12px;
+        text-align: center;
     }
 }
