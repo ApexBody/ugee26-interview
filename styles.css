@@ -64,6 +64,50 @@ header {
     gap: 16px;
 }
 
+.topbar-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.topbar-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: clamp(1rem, 1.25vw, 1.2rem);
+    text-transform: none;
+    letter-spacing: 0.02rem;
+    color: #2a2f2e;
+}
+
+.info-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: baseline;
+}
+
+.info-label {
+    font-weight: 700;
+    color: #1a3b2f;
+    text-transform: uppercase;
+    letter-spacing: 0.06rem;
+    font-size: 0.78em;
+}
+
+.info-link,
+.info-value {
+    font-weight: 600;
+    color: #0f4d3f;
+    text-decoration: none;
+    word-break: break-word;
+}
+
+.info-link:hover {
+    text-decoration: underline;
+}
+
 .title {
     font-size: inherit;
     font-weight: inherit;
@@ -80,6 +124,17 @@ header {
     border: 1px solid #1c1f1e;
     border-radius: 999px;
     transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.topbar-links .link-plain {
+    border: none;
+    padding: 0;
+    letter-spacing: 0.08rem;
+}
+
+.topbar-links .link-plain:hover {
+    background-color: transparent;
+    color: #1c1f1e;
 }
 
 .topbar-links a:hover {
@@ -524,6 +579,19 @@ footer {
     .topbar {
         flex-direction: row;
         align-items: center;
+    }
+
+    .topbar-left {
+        gap: 8px;
+    }
+
+    .topbar-info {
+        font-size: 0.9rem;
+        letter-spacing: 0.01rem;
+    }
+
+    .info-label {
+        letter-spacing: 0.05rem;
     }
 
     /* Hide board link on mobile - board is for TV display */
