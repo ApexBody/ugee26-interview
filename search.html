@@ -58,7 +58,7 @@
 
     <script>
         // --- CONFIGURATION ---
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzJMHzdxuPEidWWJDd8ox4ebtk2fxJQ5sRxXxlC8D5icKrrzrdkmVhRQBiTnzl72WhMmg/exec';
+        const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnSAYwWH-xxFRlPifQyg96HrirZXfoyilLwwzX1OpgttuckdknqDti_1v8I6TRi6h_btNu_XCKCxRAdxss0kcSGgKSU62MAjHZ5uI1VwRY2FcoIt8btaojuPo3v9qV-pF_lY4OCAbwk_wQ74KCeyhdN8eNPbwtHxlOKCZeWq9P52vMgKGH4a0DazRFOgIP_HkFbmFUvQvmJ9z-_0ewCQHEeE6h-iduIhzX1QQXOeLMaUwMeD-IG1L6qO69LKLwfQNqAFfBDsP0im5FjFPRLu7OfbDQA8CQ&lib=MktBs0tCMkhQmXdn5ljqrnbxEVFa3CZ3r';
         const POLLING_INTERVAL_MS = 120000;
 
         let allCandidates = [];
@@ -75,8 +75,9 @@
                 const response = await fetch(API_URL);
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
+                const normalizedData = normalizeCandidateData(data);
 
-                allCandidates = data.filter(candidate => normalizeStatus(candidate.State) !== 'YET TO ARRIVE');
+                allCandidates = normalizedData.filter(candidate => normalizeStatus(candidate.State) !== 'YET TO ARRIVE');
                 statusMessage.textContent = 'Ready';
                 filterAndRender();
             } catch (error) {
@@ -98,6 +99,22 @@
 
         function normalizeValue(value) {
             return String(value || '').toLowerCase();
+        }
+
+        function normalizeCandidateData(data) {
+            if (!Array.isArray(data)) {
+                return Array.isArray(data?.data) ? data.data : data;
+            }
+
+            if (!Array.isArray(data[0])) {
+                return data;
+            }
+
+            return data.slice(1).map(row => ({
+                Admission_ID: row[0],
+                Name: row[1],
+                State: row[2]
+            }));
         }
 
         function filterCandidates(query) {

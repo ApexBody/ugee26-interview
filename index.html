@@ -49,7 +49,7 @@
 
         // --- CONFIGURATION ---
         // Ensure this matches your active deployment URL
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzJMHzdxuPEidWWJDd8ox4ebtk2fxJQ5sRxXxlC8D5icKrrzrdkmVhRQBiTnzl72WhMmg/exec';
+        const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnSAYwWH-xxFRlPifQyg96HrirZXfoyilLwwzX1OpgttuckdknqDti_1v8I6TRi6h_btNu_XCKCxRAdxss0kcSGgKSU62MAjHZ5uI1VwRY2FcoIt8btaojuPo3v9qV-pF_lY4OCAbwk_wQ74KCeyhdN8eNPbwtHxlOKCZeWq9P52vMgKGH4a0DazRFOgIP_HkFbmFUvQvmJ9z-_0ewCQHEeE6h-iduIhzX1QQXOeLMaUwMeD-IG1L6qO69LKLwfQNqAFfBDsP0im5FjFPRLu7OfbDQA8CQ&lib=MktBs0tCMkhQmXdn5ljqrnbxEVFa3CZ3r';
         
         const ITEMS_PER_PAGE = 15;
         const PAGINATION_INTERVAL_MS = 15000; // 15 seconds per screen
@@ -66,10 +66,11 @@
                 if (!response.ok) throw new Error('Network response was not ok');
                 
                 const data = await response.json();
+                const normalizedData = normalizeCandidateData(data);
                 
                 // Filter logic
                 const allowedStatuses = ['REGISTERED', 'IN PROGRESS', 'INTERVIEW DONE'];
-                allCandidates = data.filter(candidate => 
+                allCandidates = normalizedData.filter(candidate => 
                     allowedStatuses.includes(candidate.State) && normalizeStatus(candidate.State) !== 'YET TO ARRIVE'
                 );
                 
@@ -88,6 +89,22 @@
             if (!state) return 'status-unknown';
             const formattedState = state.toLowerCase().replace(/ /g, '-');
             return `status-${formattedState}`;
+        }
+
+        function normalizeCandidateData(data) {
+            if (!Array.isArray(data)) {
+                return Array.isArray(data?.data) ? data.data : data;
+            }
+
+            if (!Array.isArray(data[0])) {
+                return data;
+            }
+
+            return data.slice(1).map(row => ({
+                Admission_ID: row[0],
+                Name: row[1],
+                State: row[2]
+            }));
         }
 
         function normalizeStatus(status) {
