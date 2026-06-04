@@ -76,7 +76,7 @@
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
 
-                allCandidates = data;
+                allCandidates = data.filter(candidate => normalizeStatus(candidate.State) !== 'YET TO ARRIVE');
                 statusMessage.textContent = 'Ready';
                 filterAndRender();
             } catch (error) {
@@ -89,6 +89,11 @@
             if (!state) return 'status-unknown';
             const formattedState = state.toLowerCase().replace(/ /g, '-');
             return `status-${formattedState}`;
+        }
+
+        function normalizeStatus(status) {
+            if (!status) return 'UNKNOWN';
+            return status.toUpperCase().trim();
         }
 
         function normalizeValue(value) {

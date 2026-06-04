@@ -70,7 +70,7 @@
                 // Filter logic
                 const allowedStatuses = ['REGISTERED', 'IN PROGRESS', 'INTERVIEW DONE'];
                 allCandidates = data.filter(candidate => 
-                    allowedStatuses.includes(candidate.State)
+                    allowedStatuses.includes(candidate.State) && normalizeStatus(candidate.State) !== 'YET TO ARRIVE'
                 );
                 
                 // Initial load trigger
@@ -88,6 +88,11 @@
             if (!state) return 'status-unknown';
             const formattedState = state.toLowerCase().replace(/ /g, '-');
             return `status-${formattedState}`;
+        }
+
+        function normalizeStatus(status) {
+            if (!status) return 'UNKNOWN';
+            return status.toUpperCase().trim();
         }
 
         function renderPage() {
