@@ -58,7 +58,7 @@
 
     <script>
         // --- CONFIGURATION ---
-        const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnSAYwWH-xxFRlPifQyg96HrirZXfoyilLwwzX1OpgttuckdknqDti_1v8I6TRi6h_btNu_XCKCxRAdxss0kcSGgKSU62MAjHZ5uI1VwRY2FcoIt8btaojuPo3v9qV-pF_lY4OCAbwk_wQ74KCeyhdN8eNPbwtHxlOKCZeWq9P52vMgKGH4a0DazRFOgIP_HkFbmFUvQvmJ9z-_0ewCQHEeE6h-iduIhzX1QQXOeLMaUwMeD-IG1L6qO69LKLwfQNqAFfBDsP0im5FjFPRLu7OfbDQA8CQ&lib=MktBs0tCMkhQmXdn5ljqrnbxEVFa3CZ3r';
+        const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnRGOiZq6dwg2D6OGNxPJht0WxnC4tRHk8rvpbpDv-5yPUzqcF3T39V32xelunTFZetsfiaxqQEv5ks9qiuf6mlB5CwsU4Oxe_EYuOy8iwUGI-p5_nnc2Kn0wxW5CfTOXcYSSws430ALksbhE4C_JBB4kYkpHMWzPqllN3yPMN8GdwPo26_fmQG7SKYOVIn5ZyFJn7dtYyuROYaH-bpWodhoWa5bi18Lu8zzwV0mRp7Ot445CcCdT140D2a4vyUt0XeCPnWWPaFyWTcatIGsUyv7yrClGA&lib=M7kVuKBPJpfgrTNQci04_A7xEVFa3CZ3r';
         const POLLING_INTERVAL_MS = 120000;
 
         let allCandidates = [];
@@ -77,7 +77,10 @@
                 const data = await response.json();
                 const normalizedData = normalizeCandidateData(data);
 
-                allCandidates = normalizedData.filter(candidate => normalizeStatus(candidate.State) !== 'YET TO ARRIVE');
+                const allowedStatuses = ['REGISTERED', 'IN PROGRESS', 'INTERVIEW DONE', "YET TO ARRIVE", "COMPLETED"];
+                allCandidates = normalizedData.filter(candidate => 
+                    allowedStatuses.includes(normalizeStatus(candidate.State))
+                );
                 statusMessage.textContent = 'Ready';
                 filterAndRender();
             } catch (error) {
@@ -87,14 +90,17 @@
         }
 
         function getStatusClass(state) {
-            if (!state) return 'status-unknown';
-            const formattedState = state.toLowerCase().replace(/ /g, '-');
+            const normalizedState = normalizeStatus(state);
+            if (normalizedState === 'UNKNOWN') return 'status-unknown';
+            const formattedState = normalizedState.toLowerCase().replace(/ /g, '-');
             return `status-${formattedState}`;
         }
 
         function normalizeStatus(status) {
             if (!status) return 'UNKNOWN';
-            return status.toUpperCase().trim();
+            const baseStatus = String(status).toUpperCase().split('(')[0].trim();
+            if (baseStatus === 'IN PROCESS') return 'IN PROGRESS';
+            return baseStatus || 'UNKNOWN';
         }
 
         function normalizeValue(value) {
@@ -110,10 +116,23 @@
                 return data;
             }
 
-            return data.slice(1).map(row => ({
-                Admission_ID: row[0],
-                Name: row[1],
-                State: row[2]
+            const header = data[0].map(value => String(value || '').trim().toUpperCase());
+            const appIndex = header.indexOf('APPLICATION NUMBER');
+            const nameIndex = header.indexOf('NAME');
+            const statusIndex = header.indexOf('STATUS');
+            const hasHeader = appIndex !== -1 || nameIndex !== -1 || statusIndex !== -1;
+            const startIndex = hasHeader ? 1 : 0;
+            const fallback = data[startIndex]?.length >= 4
+                ? { app: 1, name: 2, status: 3 }
+                : { app: 0, name: 1, status: 2 };
+            const appCol = appIndex !== -1 ? appIndex : fallback.app;
+            const nameCol = nameIndex !== -1 ? nameIndex : fallback.name;
+            const statusCol = statusIndex !== -1 ? statusIndex : fallback.status;
+
+            return data.slice(startIndex).map(row => ({
+                Admission_ID: row[appCol],
+                Name: row[nameCol],
+                State: row[statusCol]
             }));
         }
 
